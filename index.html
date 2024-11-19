@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Snake</title>
     <style>
         .board{
             background-color: pink;
@@ -18,6 +18,11 @@
     </style>
 </head>
 <body>
+    <div style="text-align: center;">
+        <button onclick="startGame();">Start</button>
+        <button onclick="pauseGame();">Pause</button>
+        <button onclick="restartGame();">Restart</button>
+    </div>
     <div class="board" id="board">
        <!-- generated -->
     </div>
@@ -29,9 +34,17 @@
     </div>
 
     <script>
-        let headTop=10;
-        let headLeft=12;
-        let direction= "up"
+        let headTop=5;
+        let headLeft=5;
+        let direction= "right";
+        let tails=[
+            {x: 2, y: 5,},
+            {x: 3, y: 5,},
+            {x: 4, y: 5,}
+
+        ]
+
+        let intervalId=null;
 
         const config={
             size:20,
@@ -59,8 +72,8 @@
             render()
         }
 
-        function changeDirecton(newDirection){
-            if(direction==="up" ||                         Direction==="down"){
+        function changeDirection(newDirection){
+            if(direction==="up" ||  direction==="down"){
                 if(newDirection==="right" || newDirection==="left"){
                     direction=newDirection;
                 }
@@ -76,9 +89,41 @@
             render()
         }
 
-        setInterval(gameLoop, 300);
+        function goLeft(){
+            headLeft=headLeft-1;
+            render()
+        }
+
+        function startGame(){
+            if (!intervalId){
+                intervalId=setInterval(gameLoop,300)
+            }
+        }
+
+        function reset(){
+            headTop=5;
+            headLeft=5;
+            direction="right";
+            tails=[
+                {x: 2, y: 5},
+                {x: 3, y: 5},
+                {x: 4, y: 5},
+            ]
+        }
+
+        function restartGame(){
+            reset();
+            startGame();
+        }
+
+        function pauseGame(){
+           clearInterval(intervalId);
+           intervalId=null;
+        }
 
         function gameLoop(){
+            tails.push({x: headLeft, y: headTop});
+            tails.shift()
             switch(direction){
               case "up":
                 goUp();
@@ -86,20 +131,44 @@
               case "right":
                 goRight();
                 break;
+              case "left":
+                goLeft();
+                break;
               case "down":
                 goDown();
                 break;
             }
         }
 
-        function render(){
-            const snakeHtml=`
-             <div class="snake" style="width: ${1*config.size}px; height:${1*config.size}px; top: ${headTop*config.size}px; left:${headLeft*config.size}px;"></div>
-            `;
-            boardEl.innerHTML=snakeHtml
+        function listenKeys(event){
+            const key=event.key;
+            switch(key){
+                case "ArrowUp":
+                    changeDirection("up");
+                    break;
+                case "ArrowDown":
+                    changeDirection("down");
+                    break;
+                case "ArrowRight":
+                    changeDirection("right");
+                    break;
+                case "ArrowLeft":
+                    changeDirection("left");
+                    break;
+            }
         }
 
-        render();
+        document.addEventListener("keydown",listenKeys)
+
+        function render(){
+            let tailsHtml="";
+             for(let i=0; i<tails.length; i++){
+                tailsHtml+=`<div class="snake" style="width: ${1*config.size}px; height:${1*config.size}px; top: ${tails[i].y*config.size}px; left:${tails[i].x*config.size}px;"></div>`
+             }
+
+             const snakeHtml=`${tailsHtml}`;
+             boardEl.innerHTML=snakeHtml;
+        }
     </script>
 </body>
 </html>
