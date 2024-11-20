@@ -12,8 +12,13 @@
         }
         .snake{
             background-color: black;
-            border-radius: 10px;
+            border-radius: 10%;
             position:absolute;
+        }
+        .food{
+            position: absolute;
+            background-color: blue;
+            border-radius:20%
         }
     </style>
 </head>
@@ -34,8 +39,12 @@
     </div>
 
     <script>
-        let headTop=5;
-        let headLeft=5;
+        let headY=5;
+        let headX=5;
+
+        let foodX;
+        let foodY;
+
         let direction= "right";
         let tails=[
             {x: 2, y: 5,},
@@ -57,17 +66,17 @@
         boardEl.style.height=config.height*config.size+"px";
 
         function goUp(){
-            headTop=headTop-1;
-            if (headTop<0){
-                headTop=config.height-1;
+            headY=headY-1;
+            if (headY<0){
+                headY=config.height-1;
             }
             render()
         }
 
         function goDown(){
-            headTop=headTop+1;
-            if (headTop===config.height){
-                headTop=0;
+            headY=headY+1;
+            if (headY===config.height){
+                headY=0;
             }
             render()
         }
@@ -85,30 +94,36 @@
         }
 
         function goRight(){
-            headLeft=headLeft+1;
+            headX=headX+1;
             render()
         }
 
         function goLeft(){
-            headLeft=headLeft-1;
+            headX=headX-1;
             render()
         }
 
         function startGame(){
             if (!intervalId){
-                intervalId=setInterval(gameLoop,300)
+                intervalId=setInterval(gameLoop,300);
             }
         }
 
+        function generateFood(){
+            foodX=Math.floor(math.random()*config.width)
+            foodY=Math.floor(math.random()*config.height)
+        }
+
         function reset(){
-            headTop=5;
-            headLeft=5;
+            headY=5;
+            headX=5;
             direction="right";
             tails=[
                 {x: 2, y: 5},
                 {x: 3, y: 5},
                 {x: 4, y: 5},
-            ]
+            ];
+            generateFood()
         }
 
         function restartGame(){
@@ -122,8 +137,12 @@
         }
 
         function gameLoop(){
-            tails.push({x: headLeft, y: headTop});
+            tails.push({x: headX, y: headY});
             tails.shift()
+
+            if(headX===foodX && headY===foodY){
+                console.log("ate food")
+            }
             switch(direction){
               case "up":
                 goUp();
