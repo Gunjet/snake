@@ -42,15 +42,17 @@
         let headY=5;
         let headX=5;
 
+        let score=0;
+
         let foodX;
         let foodY;
 
         let direction= "right";
+        let nextDirection="right";
         let tails=[
             {x: 2, y: 5,},
             {x: 3, y: 5,},
             {x: 4, y: 5,}
-
         ]
 
         let intervalId=null;
@@ -70,7 +72,6 @@
             if (headY<0){
                 headY=config.height-1;
             }
-            render()
         }
 
         function goDown(){
@@ -78,17 +79,16 @@
             if (headY===config.height){
                 headY=0;
             }
-            render()
         }
 
         function changeDirection(newDirection){
             if(direction==="up" ||  direction==="down"){
                 if(newDirection==="right" || newDirection==="left"){
-                    direction=newDirection;
+                    nextDirection=newDirection;
                 }
             } else if(direction==="right" || direction==="left"){
                 if(newDirection==="up" || newDirection==="down"){
-                    direction=newDirection
+                    nextDirection=newDirection
                 }
             }
         }
@@ -110,14 +110,15 @@
         }
 
         function generateFood(){
-            foodX=Math.floor(math.random()*config.width)
-            foodY=Math.floor(math.random()*config.height)
+            foodX=Math.floor(Math.random()*config.width)
+            foodY=Math.floor(Math.random()*config.height)
         }
 
         function reset(){
             headY=5;
             headX=5;
             direction="right";
+            nextDirection=direction
             tails=[
                 {x: 2, y: 5},
                 {x: 3, y: 5},
@@ -140,20 +141,13 @@
             tails.push({x: headX, y: headY});
             tails.shift()
 
-            for(let i=0; i<tails.length-1; i++){
-                if(headX===tails[i].x && headY===tails[i].y){
-                    alert("Game over");
-                    restartGame()
-                }
-            }
-
             if(headX===foodX && headY===foodY){
                 tails.push({x: headX, y: headY});
                 generateFood();
                 score+=5;
             }
 
-            switch(direction){
+            switch(nextDirection){
               case "up":
                 goUp();
                 break;
@@ -167,6 +161,16 @@
                 goDown();
                 break;
             }
+            for(let i=0; i<tails.length-1; i++){
+                if(headX===tails[i].x && headY===tails[i.y]){
+                    alert("Game over")
+                    restartGame;
+                }
+            }
+            
+            direction=nextDirection;
+
+            render();
         }
 
         function listenKeys(event){
@@ -192,7 +196,7 @@
         function render(){
             let tailsHtml="";
 
-            const foodHtml=`<div class="food" style="width: ${1*config.size}px; height:${1*config.size}px; top: ${tails[i].y*config.size}px; left:${tails[i].x*config.size}px;"></div>`;
+            const foodHtml=`<div class="food" style="width: ${1*config.size}px; height:${1*config.size}px; top: ${foodY*config.size}px; left:${foodX*config.size}px;"></div>`;
 
              for(let i=0; i<tails.length; i++){
                 tailsHtml+=`<div class="snake" style="width: ${1*config.size}px; height:${1*config.size}px; top: ${tails[i].y*config.size}px; left:${tails[i].x*config.size}px;"></div>`
